@@ -1,11 +1,10 @@
 import 'phaser';
+import { Stage } from '../stages/Stage'
 
 export default class PlayingScene extends Phaser.Scene {
     private img_ground!: Phaser.Physics.Matter.Image;
     private img_ball!: Phaser.Physics.Matter.Image;
     private img_direction!: Phaser.Physics.Matter.Image;
-    private img_thinWoodenColumn1!: Phaser.Physics.Matter.Image;
-    private img_thinWoodenColumn2!: Phaser.Physics.Matter.Image;
 
     private isDragging: boolean = false;
     private dragStartPoint: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
@@ -15,17 +14,18 @@ export default class PlayingScene extends Phaser.Scene {
     }
 
     preload(){
-        
+        this.setControlWay();
     }
 
     create(){
-        this.img_ground = this.matter.add.image(400, 550, 'img_ground');
-        this.img_ground.setStatic(true);
-        
-        this.img_ball = this.matter.add.image(50, 400, 'img_ball');
-        this.img_ball.setCircle(15);
-        this.img_ball.setStatic(true);
+        this.setGround();
+        this.setBall();
+        this.setStage();
+    }
 
+    update(){}
+
+    setControlWay(){
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.isDragging = true;
             this.dragStartPoint.set(pointer.downX, pointer.downY);
@@ -71,10 +71,23 @@ export default class PlayingScene extends Phaser.Scene {
                 this.img_direction.rotation = angle;
             }
         });
-
-        this.img_thinWoodenColumn1 = this.matter.add.image(500, 100, 'img_thinWoodenColumn');
-        this.img_thinWoodenColumn2 = this.matter.add.image(500, 400, 'img_thinWoodenColumn');
     }
 
-    update(){}
+    setGround(){
+        this.img_ground = this.matter.add.image(400, 550, 'img_ground');
+        this.img_ground.setStatic(true);
+    }
+
+    setBall(){
+        this.img_ball = this.matter.add.image(50, 400, 'img_ball');
+        this.img_ball.setCircle(15);
+        this.img_ball.setStatic(true);
+    }
+
+    setStage(){
+        Stage.stage_1.thinWoodenColumns.forEach(col => {
+            const { x, y, key } = col;
+            this.matter.add.image(x, y, key);
+        });
+    }
 }
